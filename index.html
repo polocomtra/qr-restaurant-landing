@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qrmy - Quét ngay, Ăn liền | Giải pháp Menu QR Code Hấp dẫn nhất</title>
+    <meta name="description" content="Nền tảng tạo Menu QR Code thông minh. Giao diện ngon mắt, vận hành siêu tốc.">
+
+    <!-- Google Fonts: Plus Jakarta Sans (Modern & Tech feel) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#FFF0E5',       // Darker Warm Background (Peach/Cream)
+                            primary: '#FF4D4D',  // Tasty Red
+                            secondary: '#F28526',// Zest Orange
+                            accent: '#6A0DAD',   // Deep Purple (Balance)
+                            dark: '#1A1B26',     // Text Dark
+                            muted: '#64748B',    // Text Muted
+                        }
+                    },
+                    backgroundImage: {
+                        'foodie-gradient': 'linear-gradient(135deg, #FF4D4D 0%, #F28526 50%, #6A0DAD 100%)',
+                        'warm-glow': 'radial-gradient(circle, rgba(242,133,38,0.15) 0%, rgba(255,255,255,0) 70%)',
+                        'card-glass': 'linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    },
+                    boxShadow: {
+                        'warm': '0 20px 40px -15px rgba(242, 133, 38, 0.3)',
+                        'card': '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base styles */
+        body {
+            background-color: #FFF0E5;
+            /* Updated darker warm background */
+            color: #1A1B26;
+            overflow-x: hidden;
+            background-image: radial-gradient(#F28526 0.5px, transparent 0.5px);
+            background-size: 40px 40px;
+            /* Dot pattern */
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-nav {
+            background: rgba(255, 240, 229, 0.85);
+            /* Matched new bg with opacity */
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #FF4D4D, #6A0DAD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Decorative blobs */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-brand-secondary selection:text-white">
+
+    <!-- Background Decorations -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div
+            class="blob bg-brand-secondary/30 w-[500px] h-[500px] top-[-100px] left-[-100px] rounded-full mix-blend-multiply animate-float">
+        </div>
+        <div class="blob bg-brand-primary/20 w-[600px] h-[600px] bottom-[-100px] right-[-100px] rounded-full mix-blend-multiply animate-float"
+            style="animation-delay: 2s;"></div>
+        <div
+            class="blob bg-brand-accent/20 w-[400px] h-[400px] top-[30%] left-[40%] rounded-full mix-blend-multiply animate-pulse-slow">
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group" onclick="window.scrollTo(0,0)">
+                    <div
+                        class="relative w-10 h-10 flex items-center justify-center bg-foodie-gradient rounded-xl shadow-lg transform group-hover:rotate-12 transition duration-300">
+                        <i class="fa-solid fa-qrcode text-white text-xl"></i>
+                    </div>
+                    <span class="font-extrabold text-2xl tracking-tight text-brand-dark">Qrmy</span>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-4">
+                    <a href="https://admin.qrmy.online"
+                        class="hidden sm:block text-brand-muted hover:text-brand-secondary font-bold transition text-sm">
+                        Đăng nhập
+                    </a>
+                    <a href="https://admin.qrmy.online"
+                        class="px-6 py-2.5 rounded-full bg-brand-dark text-white font-bold text-sm shadow-lg hover:bg-brand-primary hover:shadow-warm hover:-translate-y-0.5 transition-all duration-300">
+                        Dùng thử miễn phí
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto space-y-8" data-aos="fade-up">
+
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-brand-secondary/20 shadow-sm animate-bounce"
+                    style="animation-duration: 3s;">
+                    <span class="text-xl">🍜</span>
+                    <span class="text-xs font-bold tracking-wider text-brand-secondary uppercase">Giải pháp F&B Ngon -
+                        Bổ - Rẻ</span>
+                </div>
+
+                <!-- Headline -->
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight text-brand-dark">
+                    Quét Mã Liền Tay.<br />
+                    <span class="text-gradient drop-shadow-sm">Món Ngon Tới Ngay.</span>
+                </h1>
+
+                <!-- Sub-headline -->
+                <p class="text-lg md:text-xl text-brand-muted max-w-2xl mx-auto leading-relaxed font-medium">
+                    Tạm biệt menu giấy cũ kỹ. Nâng tầm trải nghiệm thực khách với Menu QR hiện đại, hình ảnh bắt mắt và
+                    order nhanh như chớp.
+                    <br />
+                    <span class="text-brand-secondary font-bold">Vận hành nhẹ nhàng, doanh số tăng vọt.</span>
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-5 justify-center pt-6">
+                    <a href="https://admin.qrmy.online"
+                        class="group relative px-8 py-4 bg-foodie-gradient text-white rounded-full font-bold text-lg hover:shadow-warm hover:scale-105 transition duration-300 shadow-xl flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-utensils"></i> Tạo Menu Ngay
+                    </a>
+                    <a href="#demo"
+                        class="px-8 py-4 rounded-full font-bold text-lg text-brand-dark bg-white border-2 border-gray-100 hover:border-brand-secondary hover:text-brand-secondary transition duration-300 flex items-center justify-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-play text-brand-secondary text-xs"></i> Xem cách hoạt động
+                    </a>
+                </div>
+
+                <!-- Stats / Social Proof -->
+                <div class="pt-12 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-gray-200 mt-12">
+                    <div class="group">
+                        <div class="text-3xl font-black text-brand-dark group-hover:text-brand-secondary transition">30s
+                        </div>
+                        <div class="text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">Setup siêu tốc
+                        </div>
+                    </div>
+                    <div class="group">
+                        <div class="text-3xl font-black text-brand-dark group-hover:text-brand-secondary transition">0đ
+                        </div>
+                        <div class="text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">Chi phí thiết bị
+                        </div>
+                    </div>
+                    <div class="group">
+                        <div class="text-3xl font-black text-brand-dark group-hover:text-brand-secondary transition">
+                            100%</div>
+                        <div class="text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">Hài lòng</div>
+                    </div>
+                    <div class="group">
+                        <div class="text-3xl font-black text-brand-dark group-hover:text-brand-secondary transition">
+                            24/7</div>
+                        <div class="text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">Hỗ trợ tận tâm
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Visual (3D Perspective) -->
+            <div class="mt-20 relative perspective-1000">
+                <!-- Main Dashboard Interface (CSS Mockup - Light Theme) -->
+                <div
+                    class="relative z-10 mx-auto max-w-5xl aspect-video rounded-2xl overflow-hidden border border-gray-200 shadow-2xl bg-white transform rotate-x-12 hover:rotate-x-0 transition duration-1000 ease-out group">
+
+                    <div class="flex h-full">
+                        <!-- Sidebar Mockup -->
+                        <div class="w-64 border-r border-gray-100 bg-gray-50 p-6 hidden md:flex flex-col gap-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-lg bg-brand-secondary/20 flex items-center justify-center">
+                                    <div class="w-4 h-4 rounded bg-brand-secondary"></div>
+                                </div>
+                                <div class="h-3 w-24 bg-gray-200 rounded-full"></div>
+                            </div>
+                            <div class="space-y-3">
+                                <div
+                                    class="h-10 w-full bg-white border border-gray-100 shadow-sm rounded-lg flex items-center px-4">
+                                    <div class="h-2 w-24 bg-brand-secondary rounded-full"></div>
+                                </div>
+                                <div class="h-10 w-full hover:bg-gray-100 rounded-lg flex items-center px-4 transition">
+                                    <div class="h-2 w-20 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div class="h-10 w-full hover:bg-gray-100 rounded-lg flex items-center px-4 transition">
+                                    <div class="h-2 w-16 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="mt-auto">
+                                <div
+                                    class="h-32 rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-secondary/10 p-4 border border-brand-secondary/10">
+                                    <div
+                                        class="h-8 w-8 rounded-full bg-white mb-3 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-brand-secondary text-xs"></i>
+                                    </div>
+                                    <div class="h-2 w-full bg-brand-secondary/20 rounded-full mb-2"></div>
+                                    <div class="h-2 w-2/3 bg-brand-secondary/20 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content Mockup -->
+                        <div class="flex-1 p-8 flex flex-col gap-8 bg-white">
+                            <!-- Header -->
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="h-4 w-32 bg-gray-200 rounded-full mb-2"></div>
+                                    <div class="h-2 w-48 bg-gray-100 rounded-full"></div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="h-10 w-10 rounded-full bg-gray-100"></div>
+                                    <div
+                                        class="h-10 w-10 rounded-full bg-brand-secondary text-white flex items-center justify-center shadow-lg shadow-brand-secondary/30">
+                                        <i class="fa-solid fa-bell"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stats Grid -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="p-4 rounded-xl bg-orange-50 border border-orange-100">
+                                    <div class="flex justify-between mb-4">
+                                        <div
+                                            class="h-8 w-8 rounded-lg bg-white flex items-center justify-center text-brand-secondary shadow-sm">
+                                            <i class="fa-solid fa-wallet"></i>
+                                        </div>
+                                    </div>
+                                    <div class="h-6 w-24 bg-brand-secondary/20 rounded-full mb-2"></div>
+                                    <div class="h-3 w-16 bg-brand-secondary/10 rounded-full"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-purple-50 border border-purple-100">
+                                    <div class="flex justify-between mb-4">
+                                        <div
+                                            class="h-8 w-8 rounded-lg bg-white flex items-center justify-center text-brand-accent shadow-sm">
+                                            <i class="fa-solid fa-users"></i>
+                                        </div>
+                                    </div>
+                                    <div class="h-6 w-24 bg-brand-accent/20 rounded-full mb-2"></div>
+                                    <div class="h-3 w-16 bg-brand-accent/10 rounded-full"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-red-50 border border-red-100">
+                                    <div class="flex justify-between mb-4">
+                                        <div
+                                            class="h-8 w-8 rounded-lg bg-white flex items-center justify-center text-brand-primary shadow-sm">
+                                            <i class="fa-solid fa-bowl-food"></i>
+                                        </div>
+                                    </div>
+                                    <div class="h-6 w-24 bg-brand-primary/20 rounded-full mb-2"></div>
+                                    <div class="h-3 w-16 bg-brand-primary/10 rounded-full"></div>
+                                </div>
+                            </div>
+
+                            <!-- Chart Area -->
+                            <div
+                                class="flex-1 rounded-xl bg-gray-50 border border-gray-100 p-6 relative overflow-hidden flex items-end justify-between gap-4">
+                                <div class="w-full bg-brand-secondary/20 rounded-t-lg h-[40%]"></div>
+                                <div class="w-full bg-brand-primary/30 rounded-t-lg h-[70%]"></div>
+                                <div class="w-full bg-brand-accent/30 rounded-t-lg h-[50%]"></div>
+                                <div
+                                    class="w-full bg-foodie-gradient rounded-t-lg h-[85%] shadow-lg shadow-brand-secondary/20">
+                                </div>
+                                <div class="w-full bg-brand-secondary/40 rounded-t-lg h-[60%]"></div>
+                                <div class="w-full bg-brand-primary/30 rounded-t-lg h-[45%]"></div>
+                                <div class="w-full bg-brand-accent/20 rounded-t-lg h-[30%]"></div>
+
+                                <!-- Floating Tooltip -->
+                                <div
+                                    class="absolute top-10 left-1/3 bg-brand-dark text-white px-3 py-2 rounded-lg shadow-xl transform -translate-x-1/2">
+                                    <div class="text-xs text-gray-400 mb-1">Doanh thu hôm nay</div>
+                                    <div class="text-sm font-bold">🎉 2.5tr VNĐ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Mobile UI (CSS Mockup - Food App Style) -->
+                    <div
+                        class="absolute -right-8 -bottom-12 w-72 h-[500px] bg-white rounded-[3rem] border-8 border-gray-900 shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden animate-float hidden md:block">
+                        <!-- Notch -->
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-xl z-20">
+                        </div>
+
+                        <!-- App Content -->
+                        <div class="relative h-full w-full bg-gray-50 flex flex-col">
+                            <!-- Header Image -->
+                            <div class="h-36 bg-white relative p-4 flex flex-col justify-end shadow-sm z-10">
+                                <div class="text-brand-dark font-black text-xl">Phở Cười</div>
+                                <div class="text-xs text-green-600 font-bold flex items-center gap-1 mt-1">
+                                    <i class="fa-solid fa-circle text-[6px]"></i> Đang mở cửa • <i
+                                        class="fa-solid fa-star text-yellow-400"></i> 4.8
+                                </div>
+                            </div>
+
+                            <!-- Menu List -->
+                            <div class="p-4 space-y-3 overflow-hidden">
+                                <!-- Item 1 -->
+                                <div
+                                    class="flex gap-3 p-3 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-brand-secondary transition cursor-pointer group/item">
+                                    <div
+                                        class="h-16 w-16 bg-orange-100 rounded-xl shrink-0 flex items-center justify-center text-2xl">
+                                        🍜</div>
+                                    <div class="flex-1 space-y-1">
+                                        <div class="font-bold text-gray-800 text-sm">Phở Bò Tái Nạm</div>
+                                        <div class="text-xs text-gray-500 line-clamp-1">Nước dùng xương hầm 24h...</div>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <div class="font-bold text-brand-primary text-sm">55k</div>
+                                            <div
+                                                class="h-6 w-6 rounded-full bg-brand-secondary text-white flex items-center justify-center text-xs shadow-md shadow-brand-secondary/30">
+                                                +</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Item 2 -->
+                                <div class="flex gap-3 p-3 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                    <div
+                                        class="h-16 w-16 bg-red-100 rounded-xl shrink-0 flex items-center justify-center text-2xl">
+                                        🥩</div>
+                                    <div class="flex-1 space-y-1">
+                                        <div class="font-bold text-gray-800 text-sm">Bò Kho Bánh Mì</div>
+                                        <div class="text-xs text-gray-500 line-clamp-1">Thơm ngon đậm đà...</div>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <div class="font-bold text-brand-primary text-sm">60k</div>
+                                            <div
+                                                class="h-6 w-6 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-xs">
+                                                +</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Item 3 -->
+                                <div class="flex gap-3 p-3 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                    <div
+                                        class="h-16 w-16 bg-yellow-100 rounded-xl shrink-0 flex items-center justify-center text-2xl">
+                                        🥤</div>
+                                    <div class="flex-1 space-y-1">
+                                        <div class="font-bold text-gray-800 text-sm">Trà Tắc Khổng Lồ</div>
+                                        <div class="text-xs text-gray-500 line-clamp-1">Giải nhiệt mùa hè...</div>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <div class="font-bold text-brand-primary text-sm">25k</div>
+                                            <div
+                                                class="h-6 w-6 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-xs">
+                                                +</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Cart -->
+                            <div
+                                class="mt-auto m-4 p-4 rounded-2xl bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border border-gray-100">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="text-xs text-gray-500 font-bold">2 Món</div>
+                                    <div class="text-sm font-black text-brand-dark">115.000đ</div>
+                                </div>
+                                <div
+                                    class="h-12 w-full bg-brand-dark rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg hover:bg-brand-primary transition cursor-pointer">
+                                    Đặt Món Ngay <i class="fa-solid fa-arrow-right ml-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES GRID (Cards) -->
+    <section class="py-24 relative bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-brand-secondary font-bold tracking-wider text-sm uppercase mb-2 block">Tính năng vượt
+                    trội</span>
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-4 text-brand-dark">Công nghệ phục vụ <br><span
+                        class="text-gradient">Ẩm thực</span></h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div
+                    class="glass-card p-8 rounded-3xl hover:-translate-y-2 transition duration-300 group hover:shadow-warm bg-orange-50/50 border-orange-100">
+                    <div
+                        class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-brand-secondary mb-6 shadow-md text-2xl group-hover:scale-110 transition">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-3">Order Nhanh Như Chớp</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Đồng bộ dữ liệu thời gian thực (Real-time). Khách bấm gửi đơn, bếp nhận tin báo "Ting Ting" ngay
+                        lập tức. Không độ trễ.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    class="glass-card p-8 rounded-3xl hover:-translate-y-2 transition duration-300 group hover:shadow-warm bg-purple-50/50 border-purple-100">
+                    <div
+                        class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-brand-accent mb-6 shadow-md text-2xl group-hover:scale-110 transition">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-3">QR Code Độc Đáo</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Mã QR không còn nhàm chán. Tùy biến mã QR với logo quán, màu sắc thương hiệu và hình ảnh món ăn
+                        hấp dẫn.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    class="glass-card p-8 rounded-3xl hover:-translate-y-2 transition duration-300 group hover:shadow-warm bg-red-50/50 border-red-100">
+                    <div
+                        class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-brand-primary mb-6 shadow-md text-2xl group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-3">Vận Hành Nhẹ Nhàng</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Không cần mua máy chủ đắt tiền. Mọi dữ liệu được lưu trữ an toàn trên mây. Chủ quán quản lý từ
+                        xa mọi lúc mọi nơi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI SECTION (Highlight) -->
+    <section class="py-24 relative overflow-hidden bg-brand-dark text-white">
+        <!-- Decoration -->
+        <div
+            class="absolute top-0 right-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div
+                class="glass-card bg-white/5 rounded-3xl p-8 md:p-16 border border-white/10 overflow-hidden relative backdrop-blur-md">
+
+                <div class="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+                    <div class="space-y-8">
+                        <div
+                            class="inline-flex items-center gap-2 text-brand-secondary font-bold tracking-wider text-sm uppercase">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Trợ Lý Ảo Thông Minh
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">
+                            Khi Menu giấy <br>
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-brand-secondary to-brand-primary">biết
+                                kể chuyện.</span>
+                        </h2>
+                        <p class="text-gray-300 text-lg">
+                            Qrmy tích hợp AI để giúp món ăn của bạn trở nên hấp dẫn hơn trong mắt thực khách. Không còn
+                            những dòng mô tả khô khan.
+                        </p>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-brand-secondary/20 flex items-center justify-center mt-1 text-brand-secondary">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl">Viết Mô Tả "Thèm Chảy Nước Miếng"</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Chỉ cần nhập tên món, AI sẽ viết những lời
+                                        giới thiệu đầy cảm xúc và kích thích vị giác.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-brand-primary/20 flex items-center justify-center mt-1 text-brand-primary">
+                                    <i class="fa-solid fa-language"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl">Dịch Đa Ngôn Ngữ Chuẩn Xác</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Đón khách quốc tế dễ dàng với Menu tự động
+                                        dịch sang tiếng Anh, Hàn, Trung, Nhật.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="#"
+                            class="inline-flex items-center gap-2 text-white border-b-2 border-brand-secondary pb-1 hover:text-brand-secondary transition font-bold mt-4">
+                            Khám phá sức mạnh AI <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
+
+                    <!-- Code/AI Visual -->
+                    <div class="relative">
+                        <div
+                            class="bg-gray-900 rounded-2xl p-6 border border-gray-700 shadow-2xl font-mono text-sm relative overflow-hidden group transform hover:rotate-1 transition duration-500">
+                            <div class="flex gap-2 mb-6 border-b border-gray-800 pb-4">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                <div class="ml-auto text-xs text-gray-500">AI_Generator.js</div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex gap-2">
+                                    <span class="text-purple-400">INPUT:</span>
+                                    <span class="text-green-400">"Bún Bò Huế"</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <span class="text-blue-400">PROCESSING...</span>
+                                    <span class="animate-pulse">███</span>
+                                </div>
+                                <div class="border-l-2 border-brand-secondary pl-4 mt-2">
+                                    <span class="text-gray-500 text-xs block mb-1">// AI Output generated:</span>
+                                    <p class="text-white italic leading-relaxed">
+                                        "Hương vị Cố Đô đậm đà trong từng sợi bún to tròn, hòa quyện cùng nước dùng sa
+                                        tế cay nồng và chân giò ninh mềm. <span class="text-brand-secondary">Một tuyệt
+                                            phẩm không thể bỏ lỡ!</span>"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Decorative element -->
+                        <div class="absolute -bottom-10 -right-10 text-9xl opacity-10 rotate-12">🤖</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS (Timeline) -->
+    <section class="py-24 relative bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-brand-secondary font-bold tracking-wider text-sm uppercase mb-2 block">Quy trình đơn
+                    giản</span>
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-4 text-brand-dark">Sẵn sàng đón khách trong <span
+                        class="text-brand-secondary">3 bước</span></h2>
+            </div>
+
+            <div class="relative grid md:grid-cols-3 gap-12">
+                <!-- Line -->
+                <div
+                    class="hidden md:block absolute top-12 left-[15%] right-[15%] h-[2px] bg-gray-200 border-t border-dashed border-gray-400">
+                </div>
+
+                <!-- Step 1 -->
+                <div class="text-center relative group">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center text-3xl font-black text-brand-secondary mb-6 shadow-lg border-4 border-white group-hover:scale-110 transition duration-300 relative z-10">
+                        1
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-2">Đăng Ký Tài Khoản</h3>
+                    <p class="text-gray-600 text-sm px-6">Điền thông tin nhà hàng của bạn. Chỉ mất chưa đầy 1 phút.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="text-center relative group">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center text-3xl font-black text-brand-primary mb-6 shadow-lg border-4 border-white group-hover:scale-110 transition duration-300 relative z-10">
+                        2
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-2">Tạo Menu & QR</h3>
+                    <p class="text-gray-600 text-sm px-6">Nhập món ăn, giá bán và hình ảnh. Hệ thống tự tạo mã QR cho
+                        từng bàn.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="text-center relative group">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center text-3xl font-black text-brand-accent mb-6 shadow-lg border-4 border-white group-hover:scale-110 transition duration-300 relative z-10">
+                        3
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-dark mb-2">Dán QR & Bán Hàng</h3>
+                    <p class="text-gray-600 text-sm px-6">In mã QR dán lên bàn. Khách quét mã, đơn về bếp, tiền về túi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="py-24 relative bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-4 text-brand-dark">Đầu tư nhỏ, <span
+                        class="text-gradient">Lợi nhuận lớn</span></h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Free Plan -->
+                <div
+                    class="bg-gray-50 p-8 rounded-[2rem] flex flex-col hover:shadow-xl transition border border-gray-200">
+                    <h3 class="text-brand-dark text-2xl font-bold mb-2">Gói Khởi Nghiệp</h3>
+                    <div class="text-4xl font-black text-brand-dark mb-6">0đ <span
+                            class="text-lg text-gray-500 font-normal">/trọn đời</span></div>
+                    <p class="text-gray-600 mb-8 text-sm">Dành cho quán nhỏ, cafe take-away mới bắt đầu.</p>
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center gap-3 text-gray-700 text-sm"><i
+                                class="fa-solid fa-check text-green-500"></i> <strong>30</strong> món ăn</li>
+                        <li class="flex items-center gap-3 text-gray-700 text-sm"><i
+                                class="fa-solid fa-check text-green-500"></i> <strong>5</strong> bàn QR</li>
+                        <li class="flex items-center gap-3 text-gray-700 text-sm"><i
+                                class="fa-solid fa-check text-green-500"></i> Nhận đơn Realtime</li>
+                    </ul>
+                    <a href="https://admin.qrmy.online"
+                        class="w-full py-4 rounded-xl border-2 border-brand-dark text-brand-dark font-bold text-center hover:bg-brand-dark hover:text-white transition">Bắt
+                        đầu ngay</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div
+                    class="bg-brand-dark p-8 rounded-[2rem] flex flex-col relative shadow-2xl transform md:-translate-y-4">
+                    <div
+                        class="absolute top-0 right-0 bg-foodie-gradient text-white text-xs font-bold px-4 py-2 rounded-bl-2xl rounded-tr-[1.8rem]">
+                        BÁN CHẠY NHẤT
+                    </div>
+                    <h3 class="text-white text-2xl font-bold mb-2">Gói Tăng Tốc</h3>
+                    <div class="text-4xl font-black text-white mb-6">199k <span
+                            class="text-lg text-gray-400 font-normal">/tháng</span></div>
+                    <p class="text-gray-400 mb-8 text-sm">Mở khóa toàn bộ sức mạnh công nghệ cho nhà hàng.</p>
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center gap-3 text-white text-sm"><i
+                                class="fa-solid fa-check text-brand-secondary"></i> <strong>Không giới hạn</strong> món
+                            & bàn</li>
+                        <li class="flex items-center gap-3 text-white text-sm"><i
+                                class="fa-solid fa-check text-brand-secondary"></i> <strong>Full tính năng AI</strong>
+                            (Viết & Dịch)</li>
+                        <li class="flex items-center gap-3 text-white text-sm"><i
+                                class="fa-solid fa-check text-brand-secondary"></i> Báo cáo doanh thu chi tiết</li>
+                        <li class="flex items-center gap-3 text-white text-sm"><i
+                                class="fa-solid fa-check text-brand-secondary"></i> Hỗ trợ VIP 24/7</li>
+                    </ul>
+                    <a href="https://admin.qrmy.online"
+                        class="w-full py-4 rounded-xl bg-foodie-gradient text-white font-bold text-center hover:shadow-warm hover:scale-105 transition">Nâng
+                        cấp Pro</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-gray-200 bg-white pt-16 pb-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-foodie-gradient flex items-center justify-center text-white shadow-lg">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+                    <span class="font-extrabold text-2xl text-brand-dark">Qrmy</span>
+                </div>
+                <div class="flex gap-8 text-gray-600 text-sm font-medium">
+                    <a href="#" class="hover:text-brand-secondary transition">Điều khoản</a>
+                    <a href="#" class="hover:text-brand-secondary transition">Bảo mật</a>
+                    <a href="#" class="hover:text-brand-secondary transition">Liên hệ</a>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-brand-dark hover:bg-brand-secondary hover:text-white transition"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-brand-dark hover:bg-brand-secondary hover:text-white transition"><i
+                            class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="text-center text-gray-400 text-xs border-t border-gray-100 pt-8">
+                &copy; 2025 Qrmy Platform. Made with 🍜 in Vietnam.
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
