@@ -1,0 +1,10 @@
+{
+  "name": "qrmy-landing",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./styles/input.css -o ./assets/styles.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
