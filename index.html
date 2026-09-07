@@ -1,724 +1,1625 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#0f172a" />
+        <title>Qrmy — Khách tự gọi món bằng QR tại bàn</title>
+        <meta
+            name="description"
+            content="Qrmy giúp quán ăn tại chỗ để khách xem menu, gọi món và gọi thêm bằng QR ngay trên điện thoại, không cần cài app."
+        />
+        <meta
+            property="og:title"
+            content="Qrmy — Khách tự gọi món bằng QR tại bàn"
+        />
+        <meta
+            property="og:description"
+            content="Khách tự gọi món. Nhân viên tập trung phục vụ. Quán vẫn giữ POS và cách thu tiền hiện tại."
+        />
+        <meta property="og:type" content="website" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
-    <title>Qrmy | Menu QR và quản lý đơn hàng cho nhà hàng</title>
-    <meta name="description"
-        content="Qrmy giúp nhà hàng tạo menu QR theo bàn, nhận đơn realtime và quản lý vận hành từ một dashboard.">
+        <!-- Favicon -->
+        <link
+            rel="icon"
+            type="image/png"
+            href="assets/images/favicon-192.png"
+        />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/images/favicon-192.png">
+        <!-- Google Fonts: Plus Jakarta Sans & Be Vietnam Pro -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
 
-    <!-- Google Fonts: Plus Jakarta Sans & Be Vietnam Pro -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+        <link rel="stylesheet" href="assets/styles.css" />
 
-    <link rel="stylesheet" href="assets/styles.css">
-
-    <style>
-        :root {
-            --surface-canvas: #f8fafc;
-            --surface-raised: #ffffff;
-            --surface-subtle: #f1f5f9;
-            --content-primary: #0f172a;
-            --content-secondary: #334155;
-            --content-muted: #64748b;
-            --border-subtle: #e2e8f0;
-            --brand: #ff4f18;
-            --brand-hover: #e03e0b;
-            --success: #10b981;
-            --accent: #f59e0b;
-            --radius-sm: 0.5rem;
-            --radius-md: 0.75rem;
-            --radius-lg: 1rem;
-            --motion-fast: 150ms;
-            --motion-standard: 200ms;
-        }
-
-        /* Base styles */
-        body {
-            background-color: var(--surface-canvas);
-            color: var(--content-primary);
-            overflow-x: hidden;
-            background-image: radial-gradient(rgba(15, 23, 42, 0.07) 1px, transparent 0px);
-            background-size: 40px 40px;
-            font-family: "Plus Jakarta Sans", sans-serif;
-            scroll-padding-top: 6rem;
-        }
-
-        a:focus-visible,
-        button:focus-visible {
-            outline: 2px solid var(--brand);
-            outline-offset: 3px;
-        }
-
-        .skip-link {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 100;
-            transform: translateY(-200%);
-            border-radius: var(--radius-md);
-            background: var(--surface-raised);
-            color: var(--content-primary);
-            padding: 0.75rem 1rem;
-            font-weight: 700;
-            box-shadow: 0 12px 24px rgb(15 23 42 / 0.12);
-        }
-
-        .skip-link:focus {
-            transform: translateY(0);
-        }
-
-        .icon {
-            width: 1em;
-            height: 1em;
-            display: inline-block;
-            flex: none;
-            vertical-align: -0.125em;
-            fill: none;
-            stroke: currentColor;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-width: 2;
-        }
-
-        /* Glassmorphism Utilities */
-        .glass-nav {
-            background: rgba(241, 245, 249, 0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(15, 23, 42, 0.05);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.05);
-        }
-
-        /* Gradient Text */
-        .text-gradient {
-            background: linear-gradient(to right, #ff4f18, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Decorative blobs */
-        .blob {
-            position: absolute;
-            filter: blur(72px);
-            z-index: -1;
-            opacity: 0.42;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                scroll-behavior: auto !important;
-                transition-duration: 0.01ms !important;
+        <style>
+            :root {
+                --surface-canvas: #f8fafc;
+                --surface-raised: #ffffff;
+                --surface-subtle: #f1f5f9;
+                --content-primary: #0f172a;
+                --content-secondary: #334155;
+                --content-muted: #64748b;
+                --border-subtle: #e2e8f0;
+                --brand: #ff4f18;
+                --brand-hover: #e03e0b;
+                --success: #10b981;
+                --accent: #f59e0b;
+                --radius-sm: 0.5rem;
+                --radius-md: 0.75rem;
+                --radius-lg: 1rem;
+                --motion-fast: 150ms;
+                --motion-standard: 200ms;
             }
-        }
-    </style>
-</head>
 
-<body class="antialiased selection:bg-brand-secondary selection:text-white">
+            /* Base styles */
+            body {
+                background-color: var(--surface-canvas);
+                color: var(--content-primary);
+                overflow-x: hidden;
+                background-image: radial-gradient(
+                    rgba(15, 23, 42, 0.07) 1px,
+                    transparent 0px
+                );
+                background-size: 40px 40px;
+                font-family: "Plus Jakarta Sans", sans-serif;
+                scroll-padding-top: 6rem;
+            }
 
-    <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+            a:focus-visible,
+            button:focus-visible {
+                outline: 2px solid var(--brand);
+                outline-offset: 3px;
+            }
 
-    <!-- Background Decorations -->
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none" aria-hidden="true">
+            .skip-link {
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 100;
+                transform: translateY(-200%);
+                border-radius: var(--radius-md);
+                background: var(--surface-raised);
+                color: var(--content-primary);
+                padding: 0.75rem 1rem;
+                font-weight: 700;
+                box-shadow: 0 12px 24px rgb(15 23 42 / 0.12);
+            }
+
+            .skip-link:focus {
+                transform: translateY(0);
+            }
+
+            .icon {
+                width: 1em;
+                height: 1em;
+                display: inline-block;
+                flex: none;
+                vertical-align: -0.125em;
+                fill: none;
+                stroke: currentColor;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 2;
+            }
+
+            /* Glassmorphism Utilities */
+            .glass-nav {
+                background: rgba(241, 245, 249, 0.85);
+                backdrop-filter: blur(20px);
+                border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+            }
+
+            .glass-card {
+                background: rgba(255, 255, 255, 0.75);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.05);
+            }
+
+            /* Gradient Text */
+            .text-gradient {
+                background: linear-gradient(to right, #ff4f18, #f59e0b);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            /* Decorative blobs */
+            .blob {
+                position: absolute;
+                filter: blur(72px);
+                z-index: -1;
+                opacity: 0.42;
+            }
+
+            .zalo-modal {
+                background: rgb(15 23 42 / 0.72);
+                backdrop-filter: blur(8px);
+            }
+
+            .zalo-modal.is-open {
+                animation: zalo-modal-fade-in 180ms ease-out both;
+            }
+
+            .zalo-modal.is-open .zalo-modal-panel {
+                animation: zalo-modal-slide-up 220ms ease-out both;
+            }
+
+            body.modal-open {
+                overflow: hidden;
+            }
+
+            @keyframes zalo-modal-fade-in {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes zalo-modal-slide-up {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px) scale(0.98);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                *,
+                *::before,
+                *::after {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    scroll-behavior: auto !important;
+                    transition-duration: 0.01ms !important;
+                }
+            }
+        </style>
+    </head>
+
+    <body class="antialiased selection:bg-brand-secondary selection:text-white">
+        <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+
+        <!-- Background Decorations -->
         <div
-            class="blob bg-brand-secondary/30 w-[500px] h-[500px] top-[-100px] left-[-100px] rounded-full mix-blend-multiply">
+            class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+            aria-hidden="true"
+        >
+            <div
+                class="blob bg-brand-secondary/30 w-[500px] h-[500px] top-[-100px] left-[-100px] rounded-full mix-blend-multiply"
+            ></div>
+            <div
+                class="blob bg-brand-primary/20 w-[600px] h-[600px] bottom-[-100px] right-[-100px] rounded-full mix-blend-multiply"
+            ></div>
+            <div
+                class="blob bg-brand-accent/20 w-[400px] h-[400px] top-[30%] left-[40%] rounded-full mix-blend-multiply"
+            ></div>
         </div>
-        <div class="blob bg-brand-primary/20 w-[600px] h-[600px] bottom-[-100px] right-[-100px] rounded-full mix-blend-multiply"></div>
-        <div
-            class="blob bg-brand-accent/20 w-[400px] h-[400px] top-[30%] left-[40%] rounded-full mix-blend-multiply">
-        </div>
-    </div>
 
-    <!-- NAVIGATION -->
-    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar" aria-label="Điều hướng chính">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <a href="#top" class="flex-shrink-0 flex items-center gap-3 group rounded-lg">
+        <!-- NAVIGATION -->
+        <nav
+            class="fixed w-full z-50 glass-nav transition-all duration-300"
+            id="navbar"
+            aria-label="Điều hướng chính"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <!-- Logo -->
+                    <a
+                        href="#top"
+                        class="flex-shrink-0 flex items-center gap-3 group rounded-lg"
+                    >
+                        <div
+                            class="relative w-10 h-10 flex items-center justify-center bg-foodie-gradient rounded-xl shadow-sm transition duration-200"
+                        >
+                            <svg
+                                class="icon text-white text-xl"
+                                aria-hidden="true"
+                            >
+                                <use href="assets/icons.svg#qr-code"></use>
+                            </svg>
+                        </div>
+                        <span
+                            class="font-serif font-extrabold text-2xl tracking-tight text-brand-dark"
+                            >Qrmy</span
+                        >
+                    </a>
+
+                    <!-- Primary navigation -->
+                    <div class="hidden md:flex items-center gap-6">
+                        <a
+                            href="#how-it-works"
+                            class="min-h-11 inline-flex items-center text-sm font-semibold text-brand-muted hover:text-brand-dark transition-colors duration-200"
+                            >Cách hoạt động</a
+                        >
+                        <a
+                            href="#benefits"
+                            class="min-h-11 inline-flex items-center text-sm font-semibold text-brand-muted hover:text-brand-dark transition-colors duration-200"
+                            >Lợi ích</a
+                        >
+                        <a
+                            href="mailto:nguyentientai.3325@gmail.com?subject=%C4%90%C4%83ng%20k%C3%BD%20d%C3%B9ng%20th%E1%BB%AD%20Qrmy"
+                            data-zalo-modal
+                            class="min-h-11 px-4 inline-flex items-center rounded-lg bg-foodie-gradient text-white font-bold text-sm shadow-sm hover:shadow-warm focus-visible:outline-none transition duration-200"
+                        >
+                            Dùng thử miễn phí
+                        </a>
+                        <a
+                            href="https://admin.qrmy.online"
+                            class="min-h-11 px-4 inline-flex items-center rounded-lg bg-brand-dark text-white font-semibold text-sm shadow-sm hover:bg-brand-primary focus-visible:outline-none transition-colors duration-200"
+                        >
+                            Đăng nhập
+                        </a>
+                    </div>
+                    <div class="flex md:hidden items-center gap-2">
+                        <a
+                            href="#start"
+                            data-zalo-modal
+                            class="min-h-11 px-3 inline-flex items-center rounded-lg text-brand-dark font-bold text-sm hover:text-brand-primary transition-colors duration-200"
+                            >Dùng thử</a
+                        >
+                        <a
+                            href="https://admin.qrmy.online"
+                            class="min-h-11 px-4 inline-flex items-center rounded-lg bg-brand-dark text-white font-semibold text-sm shadow-sm hover:bg-brand-primary focus-visible:outline-none transition-colors duration-200"
+                        >
+                            Đăng nhập
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main id="main-content">
+            <!-- HERO SECTION -->
+            <section
+                class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden"
+                id="top"
+            >
+                <div
+                    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+                >
                     <div
-                        class="relative w-10 h-10 flex items-center justify-center bg-foodie-gradient rounded-xl shadow-sm transition duration-200">
-                        <svg class="icon text-white text-xl" aria-hidden="true"><use href="assets/icons.svg#qr-code"></use></svg>
-                    </div>
-                    <span class="font-serif font-extrabold text-2xl tracking-tight text-brand-dark">Qrmy</span>
-                </a>
-
-                <!-- Right Actions -->
-                <div class="flex items-center gap-4">
-                    <a href="https://admin.qrmy.online"
-                        class="min-h-11 px-5 inline-flex items-center rounded-lg bg-brand-dark text-white font-semibold text-sm shadow-sm hover:bg-brand-primary focus-visible:outline-none transition-colors duration-200">
-                        Đăng nhập
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main id="main-content">
-    <!-- HERO SECTION -->
-    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden" id="top">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center max-w-4xl mx-auto space-y-8" data-aos="fade-up">
-
-                <!-- Badge -->
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 rounded-full bg-white border border-brand-secondary/20 shadow-sm">
-                    <svg class="icon text-sm text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#qr-code"></use></svg>
-                    <span class="text-[10px] sm:text-xs font-bold tracking-wider text-brand-secondary uppercase">Nền tảng menu QR cho F&amp;B</span>
-                </div>
-
-                <!-- Headline -->
-                <h1
-                    class="text-4xl sm:text-5xl md:text-7xl font-serif font-extrabold tracking-tight leading-tight text-brand-dark px-2">
-                    Quét Mã Liền Tay.<br />
-                    <span class="text-gradient drop-shadow-sm">Món Ngon Tới Ngay.</span>
-                </h1>
-
-                <!-- Sub-headline -->
-                <p
-                    class="text-base sm:text-lg md:text-xl text-brand-muted max-w-2xl mx-auto leading-relaxed font-medium px-4">
-                    Tạo menu theo từng bàn, để khách quét QR và gửi món ngay trên điện thoại. Mọi đơn hàng được quản lý
-                    tại một nơi trên dashboard Qrmy.
-                    <br />
-                    <span class="text-brand-secondary font-bold">Rõ ràng cho nhân viên, thuận tiện cho thực khách.</span>
-                </p>
-
-                <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center pt-6 px-4">
-                    <a href="mailto:nguyentientai.3325@gmail.com?subject=%C4%90%C4%83ng%20k%C3%BD%20nh%C3%A0%20h%C3%A0ng%20Qrmy"
-                        class="group relative min-h-12 px-6 sm:px-8 py-3 bg-foodie-gradient text-white rounded-lg font-semibold text-base sm:text-lg hover:shadow-warm active:scale-[0.98] transition duration-200 shadow-sm flex items-center justify-center gap-2">
-                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#mail"></use></svg> Liên hệ khởi tạo miễn phí
-                    </a>
-                    <a href="#how-it-works"
-                        class="min-h-12 px-6 sm:px-8 py-3 rounded-lg font-semibold text-base sm:text-lg text-brand-dark bg-white border border-gray-200 hover:border-brand-secondary hover:text-brand-secondary transition duration-200 flex items-center justify-center gap-2 shadow-sm">
-                        <svg class="icon text-brand-secondary text-sm" aria-hidden="true"><use href="assets/icons.svg#list-check"></use></svg> Xem quy trình 3 bước
-                    </a>
-                </div>
-
-                <!-- Product capabilities -->
-                <div
-                    class="pt-8 sm:pt-12 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 border-t border-gray-200 mt-8 sm:mt-12 px-4">
-                    <div class="group">
+                        class="text-center max-w-6xl mx-auto space-y-8"
+                        data-aos="fade-up"
+                    >
+                        <!-- Badge -->
                         <div
-                            class="text-xl sm:text-2xl font-black text-brand-dark group-hover:text-brand-secondary transition">
-                            QR theo bàn
+                            class="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 rounded-full bg-white border border-brand-secondary/20 shadow-sm"
+                        >
+                            <svg
+                                class="icon text-sm text-brand-secondary"
+                                aria-hidden="true"
+                            >
+                                <use href="assets/icons.svg#qr-code"></use>
+                            </svg>
+                            <span
+                                class="text-[10px] sm:text-xs font-bold tracking-wider text-brand-secondary uppercase"
+                                >Tự gọi món tại bàn bằng QR</span
+                            >
                         </div>
-                        <div class="text-[10px] sm:text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">
-                            Mỗi bàn một đường dẫn
+
+                        <!-- Headline -->
+                        <h1
+                            class="text-4xl sm:text-5xl md:text-7xl font-serif font-extrabold tracking-tight leading-tight text-brand-dark px-2"
+                        >
+                            Khách tự gọi món.<br />
+                            <span class="text-gradient drop-shadow-sm"
+                                >Nhân viên tập trung phục vụ.</span
+                            >
+                        </h1>
+
+                        <!-- Sub-headline -->
+                        <p
+                            class="text-base sm:text-lg md:text-xl text-brand-muted max-w-2xl mx-auto leading-relaxed font-medium px-4"
+                        >
+                            Khách quét QR, tự gọi món. Quán nhận đúng bàn, đúng
+                            lượt gọi — không cần thay POS.
+                        </p>
+
+                        <!-- CTA Buttons -->
+                        <div
+                            class="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center pt-6 px-4"
+                        >
+                            <a
+                                href="mailto:nguyentientai.3325@gmail.com?subject=%C4%90%C4%83ng%20k%C3%BD%20d%C3%B9ng%20th%E1%BB%AD%20Qrmy"
+                                data-zalo-modal
+                                class="group relative min-h-12 px-6 sm:px-8 py-3 bg-foodie-gradient text-white rounded-lg font-semibold text-base sm:text-lg hover:shadow-warm active:scale-[0.98] transition duration-200 shadow-sm flex items-center justify-center gap-2"
+                            >
+                                <svg class="icon" aria-hidden="true">
+                                    <use href="assets/icons.svg#mail"></use>
+                                </svg>
+                                Dùng thử miễn phí
+                            </a>
+                            <a
+                                href="#how-it-works"
+                                class="min-h-12 px-6 sm:px-8 py-3 rounded-lg font-semibold text-base sm:text-lg text-brand-dark bg-white border border-gray-200 hover:border-brand-secondary hover:text-brand-secondary transition duration-200 flex items-center justify-center gap-2 shadow-sm"
+                            >
+                                <svg
+                                    class="icon text-brand-secondary text-sm"
+                                    aria-hidden="true"
+                                >
+                                    <use
+                                        href="assets/icons.svg#list-check"
+                                    ></use>
+                                </svg>
+                                Xem cách hoạt động
+                            </a>
                         </div>
                     </div>
-                    <div class="group">
-                        <div
-                            class="text-xl sm:text-2xl font-black text-brand-dark group-hover:text-brand-secondary transition">
-                            Đơn realtime
-                        </div>
-                        <div class="text-[10px] sm:text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">
-                            Cập nhật trạng thái tức thì
-                        </div>
-                    </div>
-                    <div class="group">
-                        <div
-                            class="text-xl sm:text-2xl font-black text-brand-dark group-hover:text-brand-secondary transition">
-                            Dashboard</div>
-                        <div class="text-[10px] sm:text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">Quản lý menu, bàn và đơn</div>
-                    </div>
-                    <div class="group">
-                        <div
-                            class="text-xl sm:text-2xl font-black text-brand-dark group-hover:text-brand-secondary transition">
-                            Mobile-first</div>
-                        <div class="text-[10px] sm:text-xs text-brand-muted font-bold uppercase tracking-wide mt-1">Khách dùng ngay không cần app
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Hero Visual (3D Perspective) -->
-            <div class="mt-12 sm:mt-16 md:mt-20 relative" aria-hidden="true">
-                <!-- Product preview, styled with the production dashboard tokens -->
-                <div
-                    class="relative z-10 mx-auto max-w-5xl aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-white group">
-
-                    <div class="flex h-full">
-                        <!-- Sidebar Mockup -->
+                    <!-- Product workflow explainer -->
+                    <div
+                        class="relative mt-12 sm:mt-16 md:mt-20"
+                        aria-hidden="true"
+                    >
                         <div
-                            class="w-48 md:w-64 border-r border-stone-800 bg-stone-900 p-4 md:p-6 hidden md:flex flex-col gap-4 md:gap-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-8 h-8 rounded-lg bg-brand-primary flex items-center justify-center">
-                                    <svg class="icon text-white text-xs" aria-hidden="true"><use href="assets/icons.svg#qr-code"></use></svg>
-                                </div>
-                                <div class="h-3 w-24 bg-stone-700 rounded-full"></div>
-                            </div>
-                            <div class="space-y-3">
-                                <div
-                                    class="h-10 w-full bg-stone-800 rounded-lg flex items-center px-4">
-                                    <div class="h-2 w-24 bg-brand-primary rounded-full"></div>
-                                </div>
-                                <div class="h-10 w-full rounded-lg flex items-center px-4">
-                                    <div class="h-2 w-20 bg-stone-600 rounded-full"></div>
-                                </div>
-                                <div class="h-10 w-full rounded-lg flex items-center px-4">
-                                    <div class="h-2 w-16 bg-stone-600 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div class="mt-auto">
-                                <div
-                                    class="h-32 rounded-xl bg-stone-800 p-4 border border-stone-700">
-                                    <div
-                                        class="h-8 w-8 rounded-lg bg-brand-primary/15 mb-3 flex items-center justify-center">
-                                        <svg class="icon text-brand-primary text-xs" aria-hidden="true"><use href="assets/icons.svg#bolt"></use></svg>
-                                    </div>
-                                    <div class="h-2 w-full bg-stone-600 rounded-full mb-2"></div>
-                                    <div class="h-2 w-2/3 bg-stone-600 rounded-full"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Main Content Mockup -->
-                        <div class="flex-1 p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-6 md:gap-8 bg-white">
-                            <!-- Header -->
-                            <div class="flex justify-between items-center">
+                            class="relative z-10 mx-auto max-w-6xl overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-xl sm:p-5 md:p-6"
+                        >
+                            <div
+                                class="mb-5 flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between"
+                            >
                                 <div>
-                                    <div class="h-3 sm:h-4 w-24 sm:w-32 bg-gray-200 rounded-full mb-1 sm:mb-2"></div>
-                                    <div class="h-2 w-32 sm:w-48 bg-gray-100 rounded-full"></div>
-                                </div>
-                                <div class="flex gap-2 sm:gap-3">
-                                    <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gray-100"></div>
                                     <div
-                                        class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-brand-secondary text-white flex items-center justify-center shadow-lg shadow-brand-secondary/30 text-xs sm:text-sm">
-                                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#bell"></use></svg>
+                                        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-secondary"
+                                    >
+                                        <span
+                                            class="h-2 w-2 rounded-full bg-brand-secondary"
+                                        ></span>
+                                        Minh họa luồng gọi món
+                                    </div>
+                                    <div
+                                        class="mt-1 text-base font-extrabold text-brand-dark sm:text-xl"
+                                    >
+                                        Khách gọi — quán nhận — nhân viên phục
+                                        vụ
+                                    </div>
+                                </div>
+                                <div
+                                    class="inline-flex items-center self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"
+                                >
+                                    Bàn Pizza 2 · Đang phục vụ
+                                </div>
+                            </div>
+
+                            <div class="grid gap-2 sm:grid-cols-3 sm:gap-3">
+                                <div
+                                    class="rounded-xl border border-brand-primary/25 bg-brand-primary/10 p-3 sm:p-4"
+                                >
+                                    <div
+                                        class="text-[10px] font-bold uppercase tracking-wide text-brand-primary"
+                                    >
+                                        01 · Khách
+                                    </div>
+                                    <div
+                                        class="mt-1 text-xs font-extrabold text-brand-dark sm:text-sm"
+                                    >
+                                        Quét QR, gửi món
+                                    </div>
+                                </div>
+                                <div
+                                    class="rounded-xl border border-sky-200 bg-sky-50 p-3 sm:p-4"
+                                >
+                                    <div
+                                        class="text-[10px] font-bold uppercase tracking-wide text-sky-700"
+                                    >
+                                        02 · Quán
+                                    </div>
+                                    <div
+                                        class="mt-1 text-xs font-extrabold text-brand-dark sm:text-sm"
+                                    >
+                                        Nhận đúng bàn
+                                    </div>
+                                </div>
+                                <div
+                                    class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 sm:p-4"
+                                >
+                                    <div
+                                        class="text-[10px] font-bold uppercase tracking-wide text-emerald-700"
+                                    >
+                                        03 · Nhân viên
+                                    </div>
+                                    <div
+                                        class="mt-1 text-xs font-extrabold text-brand-dark sm:text-sm"
+                                    >
+                                        Xác nhận, phục vụ
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Stats Grid -->
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                                <div class="p-3 sm:p-4 rounded-xl bg-orange-50 border border-orange-100">
-                                    <div class="flex justify-between mb-3 sm:mb-4">
+                            <div class="mt-4 grid gap-4 lg:grid-cols-2">
+                                <article
+                                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                                >
+                                    <div
+                                        class="flex items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-white to-orange-50 p-4 sm:p-5"
+                                    >
                                         <div
-                                            class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-white flex items-center justify-center text-brand-secondary shadow-sm text-sm sm:text-base">
-                                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#wallet"></use></svg>
+                                            class="flex min-w-0 items-center gap-3"
+                                        >
+                                            <div
+                                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary"
+                                            >
+                                                <svg
+                                                    class="icon text-lg"
+                                                    aria-hidden="true"
+                                                >
+                                                    <use
+                                                        href="assets/icons.svg#qr-code"
+                                                    ></use>
+                                                </svg>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div
+                                                    class="text-sm font-extrabold text-brand-dark sm:text-base"
+                                                >
+                                                    Màn hình khách
+                                                </div>
+                                                <div
+                                                    class="text-xs font-medium text-brand-muted"
+                                                >
+                                                    Bàn Pizza 2 · Lượt gọi 1
+                                                </div>
+                                            </div>
                                         </div>
+                                        <span
+                                            class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700"
+                                            >Đã gửi</span
+                                        >
                                     </div>
                                     <div
-                                        class="h-5 sm:h-6 w-20 sm:w-24 bg-brand-secondary/20 rounded-full mb-1 sm:mb-2">
-                                    </div>
-                                    <div class="h-2 sm:h-3 w-12 sm:w-16 bg-brand-secondary/10 rounded-full"></div>
-                                </div>
-                                <div class="p-3 sm:p-4 rounded-xl bg-emerald-50 border border-emerald-100">
-                                    <div class="flex justify-between mb-3 sm:mb-4">
+                                        class="space-y-3 bg-slate-50 p-3 sm:p-4"
+                                    >
                                         <div
-                                            class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-white flex items-center justify-center text-brand-accent shadow-sm text-sm sm:text-base">
-                                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#users"></use></svg>
+                                            class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+                                        >
+                                            <div
+                                                class="mb-3 flex items-center justify-between gap-3"
+                                            >
+                                                <div
+                                                    class="text-xs font-extrabold text-brand-dark"
+                                                >
+                                                    Món đã gọi
+                                                </div>
+                                                <div
+                                                    class="text-[10px] font-bold text-brand-muted"
+                                                >
+                                                    3 món
+                                                </div>
+                                            </div>
+                                            <div class="space-y-3">
+                                                <div
+                                                    class="flex items-start justify-between gap-3"
+                                                >
+                                                    <div>
+                                                        <div
+                                                            class="text-xs font-bold text-brand-dark sm:text-sm"
+                                                        >
+                                                            1× Bruschetta cà
+                                                            chua
+                                                        </div>
+                                                        <div
+                                                            class="mt-1 text-[10px] font-semibold text-emerald-700"
+                                                        >
+                                                            Đã ra 1/1 phần
+                                                        </div>
+                                                    </div>
+                                                    <span
+                                                        class="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700"
+                                                        >Đã phục vụ</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="flex items-start justify-between gap-3"
+                                                >
+                                                    <div>
+                                                        <div
+                                                            class="text-xs font-bold text-brand-dark sm:text-sm"
+                                                        >
+                                                            2× Pizza Margherita
+                                                        </div>
+                                                        <div
+                                                            class="mt-1 text-[10px] font-semibold text-sky-700"
+                                                        >
+                                                            Còn 2 phần
+                                                        </div>
+                                                    </div>
+                                                    <span
+                                                        class="shrink-0 rounded-full bg-sky-50 px-2 py-1 text-[10px] font-bold text-sky-700"
+                                                        >Đang làm</span
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="rounded-xl bg-foodie-gradient px-4 py-3 text-center text-xs font-bold text-white shadow-sm"
+                                        >
+                                            Gọi thêm món
                                         </div>
                                     </div>
-                                    <div class="h-5 sm:h-6 w-20 sm:w-24 bg-brand-accent/20 rounded-full mb-1 sm:mb-2">
-                                    </div>
-                                    <div class="h-2 sm:h-3 w-12 sm:w-16 bg-brand-accent/10 rounded-full"></div>
-                                </div>
-                                <div class="p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-200">
-                                    <div class="flex justify-between mb-3 sm:mb-4">
+                                </article>
+
+                                <article
+                                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                                >
+                                    <div
+                                        class="flex items-center justify-between gap-3 border-b border-slate-100 bg-white p-4 sm:p-5"
+                                    >
                                         <div
-                                            class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-white flex items-center justify-center text-brand-primary shadow-sm text-sm sm:text-base">
-                                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#bowl"></use></svg>
+                                            class="flex min-w-0 items-center gap-3"
+                                        >
+                                            <div
+                                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-brand-secondary"
+                                            >
+                                                <svg
+                                                    class="icon text-lg"
+                                                    aria-hidden="true"
+                                                >
+                                                    <use
+                                                        href="assets/icons.svg#utensils"
+                                                    ></use>
+                                                </svg>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div
+                                                    class="text-sm font-extrabold text-brand-dark sm:text-base"
+                                                >
+                                                    Dashboard quán
+                                                </div>
+                                                <div
+                                                    class="text-xs font-medium text-brand-muted"
+                                                >
+                                                    Lượt gọi vừa nhận
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="shrink-0 rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-bold text-sky-700"
+                                            >Đang xử lý</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="space-y-3 bg-slate-50 p-3 sm:p-4"
+                                    >
+                                        <div
+                                            class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+                                        >
+                                            <div
+                                                class="flex items-start justify-between gap-3"
+                                            >
+                                                <div>
+                                                    <div
+                                                        class="text-xs font-extrabold text-brand-dark sm:text-sm"
+                                                    >
+                                                        Bàn Pizza 2
+                                                    </div>
+                                                    <div
+                                                        class="mt-1 text-[10px] font-medium text-brand-muted"
+                                                    >
+                                                        Lượt gọi 1 · 3 món
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="rounded-full bg-orange-50 px-2 py-1 text-[10px] font-bold text-brand-primary"
+                                                    >Đã tiếp nhận</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+                                        >
+                                            <div
+                                                class="text-[10px] font-bold uppercase tracking-wide text-brand-muted"
+                                            >
+                                                Nhân viên đang xử lý
+                                            </div>
+                                            <div
+                                                class="mt-3 space-y-2 text-xs font-bold text-brand-dark"
+                                            >
+                                                <div
+                                                    class="flex items-center justify-between gap-3"
+                                                >
+                                                    <span
+                                                        >Bruschetta cà
+                                                        chua</span
+                                                    ><span
+                                                        class="text-emerald-700"
+                                                        >Đã ra món</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="flex items-center justify-between gap-3"
+                                                >
+                                                    <span
+                                                        >Pizza Margherita
+                                                        ×2</span
+                                                    ><span class="text-sky-700"
+                                                        >Đang làm</span
+                                                    >
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="h-5 sm:h-6 w-20 sm:w-24 bg-brand-primary/20 rounded-full mb-1 sm:mb-2">
-                                    </div>
-                                    <div class="h-2 sm:h-3 w-12 sm:w-16 bg-brand-primary/10 rounded-full"></div>
-                                </div>
+                                </article>
                             </div>
 
-                            <!-- Chart Area -->
                             <div
-                                class="flex-1 rounded-xl bg-gray-50 border border-gray-100 p-3 sm:p-4 md:p-6 relative overflow-hidden flex items-end justify-between gap-2 sm:gap-3 md:gap-4">
-                                <div class="w-full bg-brand-secondary/20 rounded-t-lg h-[40%]"></div>
-                                <div class="w-full bg-brand-primary/30 rounded-t-lg h-[70%]"></div>
-                                <div class="w-full bg-brand-accent/30 rounded-t-lg h-[50%]"></div>
-                                <div
-                                    class="w-full bg-foodie-gradient rounded-t-lg h-[85%] shadow-lg shadow-brand-secondary/20">
-                                </div>
-                                <div class="w-full bg-brand-secondary/40 rounded-t-lg h-[60%]"></div>
-                                <div class="w-full bg-brand-primary/30 rounded-t-lg h-[45%]"></div>
-                                <div class="w-full bg-brand-accent/20 rounded-t-lg h-[30%]"></div>
-
-                                <!-- Floating Tooltip -->
-                                <div
-                                    class="absolute top-4 sm:top-6 md:top-10 left-1/3 bg-brand-dark text-white px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg shadow-xl transform -translate-x-1/2 hidden sm:block">
-                                    <div class="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">Doanh thu hôm nay
-                                    </div>
-                                    <div class="text-xs sm:text-sm font-bold">Đơn hàng trong ngày</div>
-                                </div>
+                                class="mt-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[10px] font-semibold leading-relaxed text-amber-800 sm:text-xs"
+                            >
+                                <svg
+                                    class="icon mt-0.5 shrink-0 text-sm"
+                                    aria-hidden="true"
+                                >
+                                    <use href="assets/icons.svg#check"></use>
+                                </svg>
+                                Mỗi bàn có một QR riêng. Khách gọi thêm vẫn nằm
+                                trong cùng phiên phục vụ.
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
 
-                    <!-- Floating Mobile UI (CSS Mockup - Food App Style) -->
+            <!-- PROBLEM -->
+            <section
+                class="relative overflow-hidden bg-white py-24"
+                id="problem"
+            >
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div
-                        class="absolute -right-4 md:-right-8 -bottom-8 md:-bottom-12 w-56 md:w-72 h-[400px] md:h-[500px] bg-white rounded-[2rem] md:rounded-[3rem] border-4 md:border-8 border-gray-900 shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden hidden lg:block">
-                        <!-- Notch -->
+                        class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"
+                    >
+                        <div>
+                            <span
+                                class="mb-3 block text-xs font-bold uppercase tracking-[0.16em] text-brand-secondary"
+                                >Vấn đề quen thuộc</span
+                            >
+                            <h2
+                                class="text-3xl font-serif font-extrabold leading-tight text-brand-dark sm:text-4xl md:text-5xl"
+                            >
+                                Giờ đông khách, nhận order không nên là nút
+                                thắt.
+                            </h2>
+                        </div>
+                        <p
+                            class="max-w-2xl text-base leading-relaxed text-brand-muted sm:text-lg"
+                        >
+                            Khi quán đông, nhân viên phải vừa mang món, vừa nhận
+                            gọi thêm, vừa nhớ đúng bàn và ghi đúng ghi chú. Qrmy
+                            chuyển phần “khách muốn gọi gì” sang điện thoại của
+                            chính khách, để nhân viên tập trung vào xử lý và
+                            phục vụ.
+                        </p>
+                    </div>
+
+                    <div class="mt-12 grid gap-5 md:grid-cols-3">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-brand-primary"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use href="assets/icons.svg#headset"></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Khách phải chờ waiter để gọi thêm
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Khách mở lại menu và gửi thêm món ngay từ bàn,
+                                không cần gọi nhân viên quay lại.
+                            </p>
+                        </article>
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-brand-secondary"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use
+                                        href="assets/icons.svg#list-check"
+                                    ></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Nhiều lượt gọi dễ rời rạc
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Mỗi lần gọi là một lượt riêng để dễ xử lý, nhưng
+                                vẫn nằm trong cùng phiên phục vụ của bàn.
+                            </p>
+                        </article>
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-brand-accent"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use
+                                        href="assets/icons.svg#list-check"
+                                    ></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Ghi chú dễ truyền sai
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Ghi chú đi cùng món từ điện thoại khách tới
+                                dashboard của quán, rõ ràng hơn qua từng bước.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BENEFITS -->
+            <section class="relative bg-slate-50 py-24" id="benefits">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="mb-12 max-w-2xl">
+                        <span
+                            class="mb-3 block text-xs font-bold uppercase tracking-[0.16em] text-brand-secondary"
+                            >Lợi ích cốt lõi</span
+                        >
+                        <h2
+                            class="text-3xl font-serif font-extrabold leading-tight text-brand-dark sm:text-4xl md:text-5xl"
+                        >
+                            Thiết kế cho trải nghiệm gọi món tại bàn.
+                        </h2>
+                    </div>
+
+                    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-brand-secondary"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use href="assets/icons.svg#qr-code"></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Không cần cài app
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Khách mở menu ngay trên trình duyệt điện thoại
+                                sau khi quét QR.
+                            </p>
+                        </article>
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-50 text-brand-primary"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use href="assets/icons.svg#qr-code"></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Đúng bàn, đúng lượt gọi
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                QR mang sẵn ngữ cảnh bàn để quán biết lượt gọi
+                                đến từ đâu.
+                            </p>
+                        </article>
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-brand-accent"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use
+                                        href="assets/icons.svg#arrow-right"
+                                    ></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Gọi thêm không cần chờ waiter
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Khách có thể tự gọi thêm trên điện thoại trong
+                                cùng phiên phục vụ.
+                            </p>
+                        </article>
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                        >
+                            <div
+                                class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-brand-dark"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use href="assets/icons.svg#users"></use>
+                                </svg>
+                            </div>
+                            <h3 class="mb-2 text-lg font-bold text-brand-dark">
+                                Một phiên phục vụ xuyên suốt
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Nhiều lượt gọi vẫn nằm trong cùng phiên phục vụ
+                                của bàn.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HOW IT WORKS -->
+            <section class="relative bg-white py-24" id="how-it-works">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="mx-auto mb-14 max-w-3xl text-center">
+                        <span
+                            class="mb-3 block text-xs font-bold uppercase tracking-[0.16em] text-brand-secondary"
+                            >Cách hoạt động</span
+                        >
+                        <h2
+                            class="text-3xl font-serif font-extrabold leading-tight text-brand-dark sm:text-4xl md:text-5xl"
+                        >
+                            Từ quét QR đến nhận món chỉ trong vài bước.
+                        </h2>
+                    </div>
+
+                    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                        <article
+                            class="relative rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        >
+                            <div
+                                class="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-lg font-black text-white shadow-lg shadow-emerald-500/20"
+                            >
+                                1
+                            </div>
+                            <h3 class="mb-2 font-bold text-brand-dark">
+                                Quét QR tại bàn
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Mỗi bàn có một QR riêng. Khách quét bằng camera
+                                điện thoại.
+                            </p>
+                        </article>
+                        <article
+                            class="relative rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        >
+                            <div
+                                class="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-brand-primary text-lg font-black text-white shadow-lg shadow-orange-500/20"
+                            >
+                                2
+                            </div>
+                            <h3 class="mb-2 font-bold text-brand-dark">
+                                Xem menu và gửi món
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Khách chọn món, số lượng và ghi chú mà không cần
+                                tạo tài khoản.
+                            </p>
+                        </article>
+                        <article
+                            class="relative rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        >
+                            <div
+                                class="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-lg font-black text-white shadow-lg shadow-amber-500/20"
+                            >
+                                3
+                            </div>
+                            <h3 class="mb-2 font-bold text-brand-dark">
+                                Quán nhận realtime
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Dashboard hiển thị đúng bàn, món và ghi chú của
+                                lượt gọi.
+                            </p>
+                        </article>
+                        <article
+                            class="relative rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        >
+                            <div
+                                class="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-sky-500 text-lg font-black text-white shadow-lg shadow-sky-500/20"
+                            >
+                                4
+                            </div>
+                            <h3 class="mb-2 font-bold text-brand-dark">
+                                Nhân viên xác nhận
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Nhân viên xác nhận lượt gọi trước khi bếp chuẩn
+                                bị và phục vụ món.
+                            </p>
+                        </article>
+                        <article
+                            class="relative rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        >
+                            <div
+                                class="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-lg font-black text-white shadow-lg shadow-slate-900/20"
+                            >
+                                5
+                            </div>
+                            <h3 class="mb-2 font-bold text-brand-dark">
+                                Gọi thêm khi cần
+                            </h3>
+                            <p class="text-sm leading-relaxed text-brand-muted">
+                                Khách gọi thêm từ cùng phiên bàn; quán vẫn xử lý
+                                từng lượt rõ ràng.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BEFORE / AFTER -->
+            <section
+                class="relative overflow-hidden bg-slate-50 py-24"
+                id="before-after"
+            >
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="mx-auto mb-12 max-w-3xl text-center">
+                        <span
+                            class="mb-3 block text-xs font-bold uppercase tracking-[0.16em] text-brand-secondary"
+                            >Trước và sau</span
+                        >
+                        <h2
+                            class="text-3xl font-serif font-extrabold leading-tight text-brand-dark sm:text-4xl md:text-5xl"
+                        >
+                            Ít bước trung gian hơn khi khách muốn gọi món.
+                        </h2>
+                    </div>
+
+                    <div class="grid gap-5 lg:grid-cols-2">
+                        <article
+                            class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8"
+                        >
+                            <div
+                                class="mb-6 flex items-center justify-between gap-4"
+                            >
+                                <h3 class="text-xl font-bold text-brand-dark">
+                                    Cách hiện tại
+                                </h3>
+                                <span
+                                    class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-brand-muted"
+                                    >Nhiều bước</span
+                                >
+                            </div>
+                            <div
+                                class="space-y-3 text-sm font-semibold text-brand-muted"
+                            >
+                                <div class="rounded-xl bg-slate-50 px-4 py-3">
+                                    Khách muốn gọi món
+                                </div>
+                                <div class="pl-5 text-brand-secondary">↓</div>
+                                <div class="rounded-xl bg-slate-50 px-4 py-3">
+                                    Gọi waiter → waiter tới bàn
+                                </div>
+                                <div class="pl-5 text-brand-secondary">↓</div>
+                                <div class="rounded-xl bg-slate-50 px-4 py-3">
+                                    Nghe / ghi món → nhập hoặc chuyển lượt gọi
+                                </div>
+                            </div>
+                        </article>
+                        <article
+                            class="rounded-2xl border border-brand-primary/20 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-6 shadow-sm sm:p-8"
+                        >
+                            <div
+                                class="mb-6 flex items-center justify-between gap-4"
+                            >
+                                <h3 class="text-xl font-bold text-brand-dark">
+                                    Với Qrmy
+                                </h3>
+                                <span
+                                    class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
+                                    >Gọn hơn</span
+                                >
+                            </div>
+                            <div
+                                class="space-y-3 text-sm font-semibold text-brand-dark"
+                            >
+                                <div
+                                    class="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm"
+                                >
+                                    <span
+                                        class="flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-xs font-black text-white"
+                                        >1</span
+                                    >Khách quét QR
+                                </div>
+                                <div
+                                    class="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm"
+                                >
+                                    <span
+                                        class="flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-xs font-black text-white"
+                                        >2</span
+                                    >Chọn món và gửi lượt gọi
+                                </div>
+                                <div
+                                    class="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm"
+                                >
+                                    <span
+                                        class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-xs font-black text-white"
+                                        >3</span
+                                    >Quán nhận trên dashboard
+                                </div>
+                            </div>
+                            <p
+                                class="mt-6 text-sm leading-relaxed text-brand-muted"
+                            >
+                                Qrmy bổ sung một cách gọi món mới; quán vẫn có
+                                thể phục vụ bằng menu giấy hoặc nhân viên như
+                                hiện tại.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KEEP CURRENT POS -->
+            <section class="relative bg-white py-24" id="keep-current">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div
+                        class="overflow-hidden rounded-3xl bg-brand-dark shadow-xl"
+                    >
                         <div
-                            class="absolute top-0 left-1/2 -translate-x-1/2 w-24 md:w-32 h-4 md:h-6 bg-gray-900 rounded-b-lg md:rounded-b-xl z-20">
-                        </div>
-
-                        <!-- App Content -->
-                        <div class="relative h-full w-full bg-gray-50 flex flex-col">
-                            <!-- Header Image -->
-                            <div
-                                class="h-28 md:h-36 bg-white relative p-3 md:p-4 flex flex-col justify-end shadow-sm z-10">
-                                <div class="text-brand-dark font-black text-base md:text-xl">Phở Cười</div>
-                                <div
-                                    class="text-[10px] md:text-xs text-green-600 font-bold flex items-center gap-1 mt-1">
-                                    <svg class="icon text-[4px] md:text-[6px]" aria-hidden="true"><use href="assets/icons.svg#circle"></use></svg> Đang mở cửa • <svg
-                                        class="icon text-yellow-400" aria-hidden="true"><use href="assets/icons.svg#star"></use></svg> 4.8
-                                </div>
+                            class="grid gap-10 p-8 md:p-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:p-16"
+                        >
+                            <div>
+                                <span
+                                    class="mb-3 block text-xs font-bold uppercase tracking-[0.16em] text-emerald-300"
+                                    >Bổ sung, không thay thế</span
+                                >
+                                <h2
+                                    class="text-3xl font-serif font-extrabold leading-tight text-white sm:text-4xl"
+                                >
+                                    Không cần thay hệ thống quán đang dùng.
+                                </h2>
+                                <p
+                                    class="mt-5 max-w-xl text-base leading-relaxed text-slate-300"
+                                >
+                                    Qrmy tập trung vào bước khách gọi món tại
+                                    bàn. Quán vẫn có thể tiếp tục dùng POS hoặc
+                                    cách tính tiền hiện tại.
+                                </p>
                             </div>
-
-                            <!-- Menu List -->
-                            <div class="p-3 md:p-4 space-y-2 md:space-y-3 overflow-hidden">
-                                <!-- Item 1 -->
-                                <div
-                                    class="flex gap-2 md:gap-3 p-2 md:p-3 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                                    <div
-                                        class="h-12 w-12 md:h-16 md:w-16 bg-orange-100 rounded-lg md:rounded-xl shrink-0 flex items-center justify-center text-brand-primary text-base md:text-xl">
-                                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#bowl"></use></svg></div>
-                                    <div class="flex-1 space-y-0.5 md:space-y-1 min-w-0">
-                                        <div class="font-bold text-gray-800 text-xs md:text-sm truncate">Phở Bò Tái Nạm
-                                        </div>
-                                        <div class="text-[10px] md:text-xs text-gray-500 line-clamp-1">Nước dùng xương
-                                            hầm 24h...</div>
-                                        <div class="flex justify-between items-center mt-0.5 md:mt-1">
-                                            <div class="font-bold text-brand-primary text-xs md:text-sm">55k</div>
-                                            <div
-                                                class="h-5 w-5 md:h-6 md:w-6 rounded-full bg-brand-secondary text-white flex items-center justify-center text-[10px] md:text-xs shadow-md shadow-brand-secondary/30">
-                                                +</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Item 2 -->
-                                <div
-                                    class="flex gap-2 md:gap-3 p-2 md:p-3 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                                    <div
-                                        class="h-12 w-12 md:h-16 md:w-16 bg-emerald-50 rounded-lg md:rounded-xl shrink-0 flex items-center justify-center text-brand-secondary text-base md:text-xl">
-                                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#utensils"></use></svg></div>
-                                    <div class="flex-1 space-y-0.5 md:space-y-1 min-w-0">
-                                        <div class="font-bold text-gray-800 text-xs md:text-sm truncate">Bò Kho Bánh Mì
-                                        </div>
-                                        <div class="text-[10px] md:text-xs text-gray-500 line-clamp-1">Thơm ngon đậm
-                                            đà...</div>
-                                        <div class="flex justify-between items-center mt-0.5 md:mt-1">
-                                            <div class="font-bold text-brand-primary text-xs md:text-sm">60k</div>
-                                            <div
-                                                class="h-5 w-5 md:h-6 md:w-6 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-[10px] md:text-xs">
-                                                +</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Item 3 -->
-                                <div
-                                    class="flex gap-2 md:gap-3 p-2 md:p-3 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                                    <div
-                                        class="h-12 w-12 md:h-16 md:w-16 bg-amber-50 rounded-lg md:rounded-xl shrink-0 flex items-center justify-center text-brand-accent text-base md:text-xl">
-                                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#mug"></use></svg></div>
-                                    <div class="flex-1 space-y-0.5 md:space-y-1 min-w-0">
-                                        <div class="font-bold text-gray-800 text-xs md:text-sm truncate">Trà Tắc Khổng
-                                            Lồ</div>
-                                        <div class="text-[10px] md:text-xs text-gray-500 line-clamp-1">Giải nhiệt mùa
-                                            hè...</div>
-                                        <div class="flex justify-between items-center mt-0.5 md:mt-1">
-                                            <div class="font-bold text-brand-primary text-xs md:text-sm">25k</div>
-                                            <div
-                                                class="h-5 w-5 md:h-6 md:w-6 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-[10px] md:text-xs">
-                                                +</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Bottom Cart -->
                             <div
-                                class="mt-auto m-3 md:m-4 p-3 md:p-4 rounded-xl md:rounded-2xl bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border border-gray-100">
-                                <div class="flex justify-between items-center mb-2 md:mb-3">
-                                    <div class="text-[10px] md:text-xs text-gray-500 font-bold">2 Món</div>
-                                    <div class="text-xs md:text-sm font-black text-brand-dark">115.000đ</div>
-                                </div>
-                                <div
-                                    class="h-10 md:h-12 w-full bg-brand-dark rounded-lg md:rounded-xl flex items-center justify-center text-white text-xs md:text-sm font-bold shadow-lg hover:bg-brand-primary transition cursor-pointer">
-                                    Đặt Món Ngay <svg class="icon ml-1 md:ml-2" aria-hidden="true"><use href="assets/icons.svg#arrow-right"></use></svg>
-                                </div>
+                                class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm"
+                            >
+                                <ul class="space-y-4">
+                                    <li
+                                        class="flex items-start gap-3 text-sm font-semibold text-white"
+                                    >
+                                        <svg
+                                            class="icon mt-0.5 text-emerald-300"
+                                            aria-hidden="true"
+                                        >
+                                            <use
+                                                href="assets/icons.svg#check"
+                                            ></use></svg
+                                        >Khách tự gọi món bằng QR tại bàn
+                                    </li>
+                                    <li
+                                        class="flex items-start gap-3 text-sm font-semibold text-white"
+                                    >
+                                        <svg
+                                            class="icon mt-0.5 text-emerald-300"
+                                            aria-hidden="true"
+                                        >
+                                            <use
+                                                href="assets/icons.svg#check"
+                                            ></use></svg
+                                        >Quán nhận lượt gọi realtime và xác nhận
+                                        trước khi xử lý
+                                    </li>
+                                    <li
+                                        class="flex items-start gap-3 text-sm font-semibold text-white"
+                                    >
+                                        <svg
+                                            class="icon mt-0.5 text-emerald-300"
+                                            aria-hidden="true"
+                                        >
+                                            <use
+                                                href="assets/icons.svg#check"
+                                            ></use></svg
+                                        >Giữ POS và cách thu tiền quen thuộc
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    <!-- FEATURES GRID (Cards) -->
-    <section class="py-24 relative bg-white" id="features">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12 sm:mb-16">
-                <span class="text-brand-secondary font-bold tracking-wider text-xs sm:text-sm uppercase mb-2 block">Tính
-                    năng vượt
-                    trội</span>
-                <h2 class="text-2xl sm:text-3xl md:text-5xl font-serif font-extrabold mb-4 text-brand-dark">Công nghệ
-                    phục vụ
-                    <br><span class="text-gradient mt-2 sm:mt-4 md:mt-10">Ẩm thực</span>
-                </h2>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6 sm:gap-8">
-                <!-- Feature 1 -->
-                <div
-                    class="p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm transition-shadow duration-200 hover:shadow-md bg-white">
-                    <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-50 rounded-xl flex items-center justify-center text-brand-secondary mb-4 sm:mb-6 text-xl sm:text-2xl">
-                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#bolt"></use></svg>
+            <!-- FREE TRIAL / FINAL CTA -->
+            <section class="relative overflow-hidden bg-white py-24" id="start">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="mx-auto mb-12 max-w-3xl text-center">
+                        <span
+                            class="mb-3 block text-xs font-bold uppercase tracking-[0.16em] text-brand-secondary"
+                            >Dùng thử cùng Qrmy</span
+                        >
+                        <h2
+                            class="text-3xl font-serif font-extrabold leading-tight text-brand-dark sm:text-4xl md:text-5xl"
+                        >
+                            Dùng thử Qrmy miễn phí 30 ngày.
+                        </h2>
+                        <p
+                            class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-brand-muted"
+                        >
+                            Qrmy hỗ trợ setup menu, bàn và QR để quán có thể thử
+                            trong vận hành thật.
+                        </p>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-bold text-brand-dark mb-2 sm:mb-3">Order Nhanh Như Chớp</h3>
-                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
-                        Khi khách gửi món, đơn mới và thay đổi trạng thái được đồng bộ để nhân viên theo dõi tại dashboard.
-                    </p>
-                </div>
 
-                <!-- Feature 2 -->
-                <div
-                    class="p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm transition-shadow duration-200 hover:shadow-md bg-white">
                     <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 bg-amber-50 rounded-xl flex items-center justify-center text-brand-accent mb-4 sm:mb-6 text-xl sm:text-2xl">
-                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#qr-code"></use></svg>
-                    </div>
-                    <h3 class="text-lg sm:text-xl font-bold text-brand-dark mb-2 sm:mb-3">QR Code Độc Đáo</h3>
-                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
-                        Tạo một đường dẫn QR cho từng bàn để thực khách mở đúng menu và bắt đầu đặt món trên điện thoại.
-                    </p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div
-                    class="p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm transition-shadow duration-200 hover:shadow-md bg-white">
-                    <div
-                        class="w-12 h-12 sm:w-14 sm:h-14 bg-orange-50 rounded-xl flex items-center justify-center text-brand-primary mb-4 sm:mb-6 text-xl sm:text-2xl">
-                        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chart"></use></svg>
-                    </div>
-                    <h3 class="text-lg sm:text-xl font-bold text-brand-dark mb-2 sm:mb-3">Vận Hành Nhẹ Nhàng</h3>
-                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
-                        Quản lý thực đơn, bàn ăn và trạng thái đơn hàng trong một giao diện thống nhất, rõ ràng.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- HOW IT WORKS (Timeline) -->
-    <section class="py-24 relative bg-gray-50" id="how-it-works">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="text-brand-secondary font-bold tracking-wider text-sm uppercase mb-2 block">Quy trình đơn
-                    giản</span>
-                <h2 class="text-3xl md:text-5xl font-serif font-extrabold mb-4 text-brand-dark">Sẵn sàng đón khách trong
-                    <span class="text-brand-secondary">3 bước</span>
-                </h2>
-            </div>
-
-            <div class="relative grid md:grid-cols-3 gap-12">
-                <!-- Line -->
-                <div
-                    class="hidden md:block absolute top-12 left-[15%] right-[15%] h-[2px] bg-gray-200 border-t border-dashed border-gray-400">
-                </div>
-
-                <!-- Step 1 -->
-                <div class="text-center relative group">
-                    <div
-                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center text-3xl font-black text-brand-secondary mb-6 shadow-lg border-4 border-white group-hover:scale-110 transition duration-300 relative z-10">
-                        1
-                    </div>
-                    <h3 class="text-xl font-bold text-brand-dark mb-2">Tạo tài khoản nhà hàng</h3>
-                    <p class="text-gray-600 text-sm px-6">Liên hệ chúng tôi để tạo tài khoản nhà hàng của bạn.</p>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="text-center relative group">
-                    <div
-                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center text-3xl font-black text-brand-primary mb-6 shadow-lg border-4 border-white group-hover:scale-110 transition duration-300 relative z-10">
-                        2
-                    </div>
-                    <h3 class="text-xl font-bold text-brand-dark mb-2">Tạo Menu & QR</h3>
-                    <p class="text-gray-600 text-sm px-6">Nhập món ăn, giá bán và hình ảnh. Hệ thống tự tạo mã QR cho
-                        từng bàn.</p>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="text-center relative group">
-                    <div
-                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center text-3xl font-black text-brand-accent mb-6 shadow-lg border-4 border-white group-hover:scale-110 transition duration-300 relative z-10">
-                        3
-                    </div>
-                    <h3 class="text-xl font-bold text-brand-dark mb-2">Dán QR & Bán Hàng</h3>
-                    <p class="text-gray-600 text-sm px-6">In mã QR dán lên bàn. Khách quét mã, đơn về bếp, tiền về túi.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- START HERE -->
-    <section class="py-24 relative bg-white" id="start">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="text-brand-secondary font-bold tracking-wider text-sm uppercase mb-2 block">Bắt đầu cùng Qrmy</span>
-                <h2 class="text-3xl md:text-5xl font-serif font-extrabold mb-4 text-brand-dark">Sẵn sàng vận hành
-                    <span class="text-gradient"> gọn hơn</span>
-                </h2>
-                <p class="mx-auto max-w-2xl text-base text-brand-muted">Liên hệ để khởi tạo nhà hàng, sau đó đăng nhập dashboard để thiết lập menu và mã QR theo từng bàn.</p>
-            </div>
-
-            <div class="flex justify-center">
-                <div
-                    class="bg-brand-dark p-8 md:p-12 rounded-2xl flex flex-col relative shadow-xl max-w-2xl w-full border border-stone-800">
-                    <div
-                        class="absolute top-0 right-0 bg-foodie-gradient text-white text-xs font-bold px-4 py-2 rounded-bl-xl rounded-tr-xl">
-                        KHỞI TẠO
-                    </div>
-                    <h3 class="text-white text-2xl md:text-3xl font-bold mb-2">Thiết lập nhà hàng của bạn</h3>
-                    <p class="text-stone-300 mb-8 text-sm md:text-base">Một luồng rõ ràng để đưa menu QR vào vận hành, từ cấu hình ban đầu tới đơn hàng realtime.
-                    </p>
-                    <ul class="space-y-4 mb-8 flex-1">
-                        <li class="flex items-center gap-3 text-white text-sm md:text-base"><svg class="icon text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Tạo danh mục và món ăn</li>
-                        <li class="flex items-center gap-3 text-white text-sm md:text-base"><svg class="icon text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Tạo QR riêng cho từng bàn</li>
-                        <li class="flex items-center gap-3 text-white text-sm md:text-base"><svg class="icon text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Nhận và xử lý đơn hàng realtime</li>
-                        <li class="flex items-center gap-3 text-white text-sm md:text-base"><svg class="icon text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Theo dõi trạng thái đơn và bàn ăn</li>
-                        <li class="flex items-center gap-3 text-white text-sm md:text-base"><svg class="icon text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Dashboard quản lý tập trung</li>
-                    </ul>
-                    <a href="mailto:nguyentientai.3325@gmail.com?subject=%C4%90%C4%83ng%20k%C3%BD%20nh%C3%A0%20h%C3%A0ng%20Qrmy"
-                        class="min-h-12 w-full py-3 rounded-lg bg-foodie-gradient text-white font-semibold text-center hover:shadow-warm active:scale-[0.98] transition duration-200 text-base md:text-lg">Liên hệ tạo nhà hàng</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="border-t border-gray-200 bg-white pt-16 pb-8 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Main Footer Content -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- Brand Section -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 mb-4">
+                        class="mx-auto max-w-4xl rounded-3xl bg-brand-dark p-8 shadow-xl sm:p-10 md:p-12"
+                    >
                         <div
-                            class="w-12 h-12 rounded-xl bg-foodie-gradient flex items-center justify-center text-white shadow-lg">
-                            <svg class="icon text-xl" aria-hidden="true"><use href="assets/icons.svg#qr-code"></use></svg>
+                            class="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center"
+                        >
+                            <div>
+                                <h3
+                                    class="text-2xl font-bold text-white sm:text-3xl"
+                                >
+                                    Muốn thử Qrmy trong một ca bán hàng thật?
+                                </h3>
+                                <p
+                                    class="mt-4 text-sm leading-relaxed text-slate-300 sm:text-base"
+                                >
+                                    Bắt đầu với menu, bàn và QR của chính quán
+                                    bạn. Đội ngũ Qrmy sẽ cùng quán đi qua bước
+                                    khởi tạo ban đầu.
+                                </p>
+                                <a
+                                    href="mailto:nguyentientai.3325@gmail.com?subject=%C4%90%C4%83ng%20k%C3%BD%20d%C3%B9ng%20th%E1%BB%AD%20Qrmy"
+                                    data-zalo-modal
+                                    class="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-foodie-gradient px-6 py-3 text-base font-bold text-white shadow-sm transition duration-200 hover:shadow-warm active:scale-[0.98]"
+                                    >Đăng ký dùng thử
+                                    <svg class="icon" aria-hidden="true">
+                                        <use
+                                            href="assets/icons.svg#arrow-right"
+                                        ></use></svg
+                                ></a>
+                            </div>
+                            <ul
+                                class="space-y-4 rounded-2xl border border-white/10 bg-white/10 p-6"
+                            >
+                                <li
+                                    class="flex items-center gap-3 text-sm font-semibold text-white"
+                                >
+                                    <svg
+                                        class="icon text-emerald-300"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#check"
+                                        ></use></svg
+                                    >Setup menu, bàn và QR
+                                </li>
+                                <li
+                                    class="flex items-center gap-3 text-sm font-semibold text-white"
+                                >
+                                    <svg
+                                        class="icon text-emerald-300"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#check"
+                                        ></use></svg
+                                    >Khách gọi món không cần cài app
+                                </li>
+                                <li
+                                    class="flex items-center gap-3 text-sm font-semibold text-white"
+                                >
+                                    <svg
+                                        class="icon text-emerald-300"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#check"
+                                        ></use></svg
+                                    >Quán nhận và xác nhận lượt gọi realtime
+                                </li>
+                                <li
+                                    class="flex items-center gap-3 text-sm font-semibold text-white"
+                                >
+                                    <svg
+                                        class="icon text-emerald-300"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#check"
+                                        ></use></svg
+                                    >Giữ POS và cách thu tiền hiện tại
+                                </li>
+                            </ul>
                         </div>
-                        <span class="font-extrabold text-2xl text-brand-dark">Qrmy</span>
                     </div>
-                    <p class="text-gray-600 text-sm leading-relaxed">
-                        Giải pháp Menu QR Code thông minh cho nhà hàng, quán ăn. Giao diện đẹp, vận hành nhanh, doanh số
-                        tăng.
-                    </p>
                 </div>
+            </section>
+        </main>
 
-                <!-- Quick Links -->
-                <div>
-                    <h4 class="font-bold text-brand-dark mb-4 text-lg">Liên kết nhanh</h4>
-                    <ul class="space-y-3">
-                        <li>
-                            <a href="#features"
-                            class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2">
-                                <svg class="icon text-xs" aria-hidden="true"><use href="assets/icons.svg#chevron-right"></use></svg> Tính năng
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#how-it-works"
-                            class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2">
-                                <svg class="icon text-xs" aria-hidden="true"><use href="assets/icons.svg#chevron-right"></use></svg> Quy trình thiết lập
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://admin.qrmy.online"
-                            class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2">
-                                <svg class="icon text-xs" aria-hidden="true"><use href="assets/icons.svg#chevron-right"></use></svg> Đăng nhập dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#start"
-                            class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2">
-                                <svg class="icon text-xs" aria-hidden="true"><use href="assets/icons.svg#chevron-right"></use></svg> Liên hệ tạo nhà hàng
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Contact Info -->
-                <div>
-                    <h4 class="font-bold text-brand-dark mb-4 text-lg">Liên hệ</h4>
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-3">
-                            <svg class="icon text-brand-secondary mt-1" aria-hidden="true"><use href="assets/icons.svg#mail"></use></svg>
-                            <a href="mailto:nguyentientai.3325@gmail.com"
-                                class="text-gray-600 hover:text-brand-secondary transition text-sm break-all">
-                                nguyentientai.3325@gmail.com
-                            </a>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="icon text-brand-secondary" aria-hidden="true"><use href="assets/icons.svg#headset"></use></svg>
-                            <span class="text-gray-600 text-sm">Hỗ trợ Qrmy</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Social Media -->
-                <div>
-                    <h4 class="font-bold text-brand-dark mb-4 text-lg">Kết nối với chúng tôi</h4>
-                    <div class="flex flex-col gap-3">
-                        <a href="https://facebook.com/tientai53" target="_blank" rel="noopener noreferrer"
-                            class="min-h-11 flex items-center gap-3 text-gray-600 hover:text-brand-secondary transition group">
+        <!-- FOOTER -->
+        <footer
+            class="border-t border-gray-200 bg-white pt-16 pb-8 relative z-10"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Main Footer Content -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12"
+                >
+                    <!-- Brand Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
                             <div
-                                class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-brand-secondary group-hover:text-white transition">
-                                <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#share"></use></svg>
+                                class="w-12 h-12 rounded-xl bg-foodie-gradient flex items-center justify-center text-white shadow-lg"
+                            >
+                                <svg class="icon text-xl" aria-hidden="true">
+                                    <use href="assets/icons.svg#qr-code"></use>
+                                </svg>
                             </div>
-                            <span class="text-sm">Facebook</span>
-                        </a>
-                        <a href="https://linkedin.com/in/tientai53" target="_blank" rel="noopener noreferrer"
-                            class="min-h-11 flex items-center gap-3 text-gray-600 hover:text-brand-secondary transition group">
-                            <div
-                                class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-brand-secondary group-hover:text-white transition">
-                                <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#share"></use></svg>
-                            </div>
-                            <span class="text-sm">LinkedIn</span>
-                        </a>
+                            <span
+                                class="font-extrabold text-2xl text-brand-dark"
+                                >Qrmy</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Lớp self-ordering tại bàn giúp khách tự gọi món bằng
+                            QR, còn nhân viên tập trung vào xử lý và phục vụ.
+                        </p>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div>
+                        <h4 class="font-bold text-brand-dark mb-4 text-lg">
+                            Liên kết nhanh
+                        </h4>
+                        <ul class="space-y-3">
+                            <li>
+                                <a
+                                    href="#benefits"
+                                    class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2"
+                                >
+                                    <svg
+                                        class="icon text-xs"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#chevron-right"
+                                        ></use>
+                                    </svg>
+                                    Lợi ích
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="#how-it-works"
+                                    class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2"
+                                >
+                                    <svg
+                                        class="icon text-xs"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#chevron-right"
+                                        ></use>
+                                    </svg>
+                                    Cách hoạt động
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://admin.qrmy.online"
+                                    class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2"
+                                >
+                                    <svg
+                                        class="icon text-xs"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#chevron-right"
+                                        ></use>
+                                    </svg>
+                                    Đăng nhập dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="#start"
+                                    data-zalo-modal
+                                    class="min-h-11 text-gray-600 hover:text-brand-secondary transition text-sm flex items-center gap-2"
+                                >
+                                    <svg
+                                        class="icon text-xs"
+                                        aria-hidden="true"
+                                    >
+                                        <use
+                                            href="assets/icons.svg#chevron-right"
+                                        ></use>
+                                    </svg>
+                                    Dùng thử 30 ngày
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div>
+                        <h4 class="font-bold text-brand-dark mb-4 text-lg">
+                            Liên hệ
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <svg
+                                    class="icon text-brand-secondary mt-1"
+                                    aria-hidden="true"
+                                >
+                                    <use href="assets/icons.svg#mail"></use>
+                                </svg>
+                                <a
+                                    href="mailto:nguyentientai.3325@gmail.com"
+                                    class="text-gray-600 hover:text-brand-secondary transition text-sm break-all"
+                                >
+                                    nguyentientai.3325@gmail.com
+                                </a>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <svg
+                                    class="icon text-brand-secondary"
+                                    aria-hidden="true"
+                                >
+                                    <use href="assets/icons.svg#headset"></use>
+                                </svg>
+                                <span class="text-gray-600 text-sm"
+                                    >Hỗ trợ Qrmy</span
+                                >
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Social Media -->
+                    <div>
+                        <h4 class="font-bold text-brand-dark mb-4 text-lg">
+                            Kết nối với chúng tôi
+                        </h4>
+                        <div class="flex flex-col gap-3">
+                            <a
+                                href="https://linkedin.com/in/tientai53"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="min-h-11 flex items-center gap-3 text-gray-600 hover:text-brand-secondary transition group"
+                            >
+                                <div
+                                    class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-brand-secondary group-hover:text-white transition"
+                                >
+                                    <svg class="icon" aria-hidden="true">
+                                        <use
+                                            href="assets/icons.svg#share"
+                                        ></use>
+                                    </svg>
+                                </div>
+                                <span class="text-sm">LinkedIn</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Bar -->
+                <div class="border-t border-gray-100 pt-8">
+                    <div
+                        class="flex flex-col md:flex-row justify-between items-center gap-4"
+                    >
+                        <div
+                            class="text-gray-400 text-xs text-center md:text-left"
+                        >
+                            &copy; 2026 Qrmy Platform. All rights reserved.
+                        </div>
+                        <div
+                            class="text-gray-400 text-xs text-center md:text-right"
+                        >
+                            Developed by
+                            <span class="font-semibold text-brand-dark"
+                                >William Nguyen</span
+                            >
+                        </div>
                     </div>
                 </div>
             </div>
+        </footer>
 
-            <!-- Bottom Bar -->
-            <div class="border-t border-gray-100 pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="text-gray-400 text-xs text-center md:text-left">
-                        &copy; 2026 Qrmy Platform. All rights reserved.
+        <!-- Zalo trial CTA modal -->
+        <div
+            id="zalo-modal"
+            class="zalo-modal fixed inset-0 z-50 items-center justify-center p-4 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="zalo-modal-title"
+            aria-describedby="zalo-modal-description"
+            hidden
+        >
+            <button
+                type="button"
+                class="absolute inset-0 cursor-default"
+                data-zalo-close
+                tabindex="-1"
+                aria-label="Đóng cửa sổ kết nối Zalo"
+            ></button>
+
+            <div
+                class="zalo-modal-panel relative z-10 w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10"
+                data-zalo-dialog
+            >
+                <div
+                    class="flex items-start justify-between gap-5 p-6 pb-5 sm:p-7 sm:pb-6"
+                >
+                    <div>
+                        <span
+                            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700"
+                        >
+                            <span
+                                class="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                                aria-hidden="true"
+                            ></span>
+                            Kết nối qua Zalo
+                        </span>
+                        <h2
+                            id="zalo-modal-title"
+                            class="mt-4 text-2xl font-extrabold leading-tight text-brand-dark sm:text-3xl"
+                        >
+                            Bắt đầu với Qrmy
+                        </h2>
+                        <p
+                            id="zalo-modal-description"
+                            class="mt-3 text-sm leading-relaxed text-brand-muted"
+                        >
+                            Quét mã để add Tiến Tài và nhận hỗ trợ setup menu,
+                            bàn và QR cho quán.
+                        </p>
                     </div>
-                    <div class="text-gray-400 text-xs text-center md:text-right">
-                        Developed by <span class="font-semibold text-brand-dark">William Nguyen</span>
+                    <button
+                        type="button"
+                        class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-brand-dark"
+                        data-zalo-close
+                        aria-label="Đóng cửa sổ kết nối Zalo"
+                    >
+                        <svg
+                            class="icon text-xl"
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M6 6l12 12M18 6L6 18"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="bg-slate-50 px-6 py-6 sm:px-7">
+                    <div
+                        class="mx-auto max-w-[250px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-sm"
+                    >
+                        <img
+                            src="assets/images/zalo-qr.jpeg"
+                            alt="Mã QR Zalo của Tiến Tài. Quét bằng ứng dụng Zalo để kết nối."
+                            width="984"
+                            height="1200"
+                            class="block h-auto w-full rounded-xl"
+                        />
                     </div>
+                    <div
+                        class="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold leading-relaxed text-emerald-800"
+                    >
+                        <svg
+                            class="icon mt-0.5 shrink-0 text-emerald-600"
+                            aria-hidden="true"
+                        >
+                            <use href="assets/icons.svg#check"></use>
+                        </svg>
+                        Mở Zalo → Quét QR → Chọn Kết bạn
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-center justify-between gap-4 border-t border-slate-100 px-6 py-4 sm:px-7"
+                >
+                    <span class="text-xs font-semibold text-slate-500"
+                        >Tiến Tài · Zalo</span
+                    >
+                    <button
+                        type="button"
+                        class="min-h-10 rounded-lg px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-brand-dark"
+                        data-zalo-close
+                    >
+                        Đóng
+                    </button>
                 </div>
             </div>
         </div>
-    </footer>
 
-</body>
+        <script>
+            (() => {
+                const modal = document.getElementById("zalo-modal");
+                const dialog = modal?.querySelector("[data-zalo-dialog]");
 
+                if (!modal || !dialog) return;
+
+                const openers = [
+                    ...document.querySelectorAll("[data-zalo-modal]"),
+                ];
+                const closeButtons = [
+                    ...modal.querySelectorAll("[data-zalo-close]"),
+                ];
+                const focusableSelector =
+                    'button:not([disabled]):not([tabindex="-1"]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+                let lastFocusedElement = null;
+
+                const getFocusableElements = () =>
+                    [...dialog.querySelectorAll(focusableSelector)].filter(
+                        (element) => element.offsetParent !== null,
+                    );
+
+                const closeModal = () => {
+                    if (modal.hidden) return;
+
+                    modal.hidden = true;
+                    modal.classList.remove("flex", "is-open");
+                    document.body.classList.remove("modal-open");
+                    lastFocusedElement?.focus({ preventScroll: true });
+                };
+
+                const openModal = (event) => {
+                    event.preventDefault();
+                    lastFocusedElement = event.currentTarget;
+                    modal.hidden = false;
+                    modal.classList.add("flex", "is-open");
+                    document.body.classList.add("modal-open");
+
+                    requestAnimationFrame(() => closeButtons[1]?.focus());
+                };
+
+                openers.forEach((opener) =>
+                    opener.addEventListener("click", openModal),
+                );
+                closeButtons.forEach((button) =>
+                    button.addEventListener("click", closeModal),
+                );
+
+                document.addEventListener("keydown", (event) => {
+                    if (modal.hidden) return;
+
+                    if (event.key === "Escape") {
+                        event.preventDefault();
+                        closeModal();
+                        return;
+                    }
+
+                    if (event.key !== "Tab") return;
+
+                    const focusableElements = getFocusableElements();
+                    if (!focusableElements.length) return;
+
+                    const firstElement = focusableElements[0];
+                    const lastElement =
+                        focusableElements[focusableElements.length - 1];
+
+                    if (
+                        event.shiftKey &&
+                        document.activeElement === firstElement
+                    ) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    } else if (
+                        !event.shiftKey &&
+                        document.activeElement === lastElement
+                    ) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                });
+            })();
+        </script>
+    </body>
 </html>
